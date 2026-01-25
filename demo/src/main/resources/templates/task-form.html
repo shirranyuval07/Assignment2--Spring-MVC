@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Task Details</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+</head>
+<body>
+
+<div class="container mt-5" style="max-width: 600px;">
+
+    <h2 class="mb-4" th:text="${mode == 'add' ? 'Create Task' : (mode == 'edit' ? 'Edit Task' : 'View Task')}">Task</h2>
+
+    <form th:action="@{/task/save}" th:object="${task}" method="post">
+
+        <div class="mb-3">
+            <label class="form-label">Task ID:</label>
+            <input type="text" th:field="*{id}" class="form-control" disabled="disabled" />
+            <input type="hidden" th:field="*{id}" />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Task Name:</label>
+            <input type="text" th:field="*{name}" class="form-control"
+                   th:disabled="${mode == 'show'}" required />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Description:</label>
+            <textarea th:field="*{description}" class="form-control" rows="3"
+                      th:disabled="${mode == 'show'}"></textarea>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Priority:</label>
+            <select th:field="*{priority}" class="form-select" id="prioritySelect"
+                    onchange="updateImage()" th:disabled="${mode == 'show'}">
+                <option value="VERY_HIGH">Very High</option>
+                <option value="HIGH">High</option>
+                <option value="MEDIUM">Medium</option>
+                <option value="LOW">Low</option>
+                <option value="VERY_LOW">Very Low</option>
+            </select>
+        </div>
+
+        <div class="mb-3 text-center">
+            <img id="priorityImage" src="" alt="Priority Image" style="max-height: 150px;" />
+        </div>
+
+        <div class="mt-4">
+            <div th:if="${mode == 'show'}">
+                <a th:href="@{/}" class="btn btn-primary w-100">OK</a>
+            </div>
+
+            <div th:if="${mode != 'show'}" class="d-flex gap-2">
+                <button type="submit" class="btn btn-success flex-grow-1">Save</button>
+                <a th:href="@{/}" class="btn btn-secondary">Cancel</a>
+            </div>
+        </div>
+    </form>
+</div>
+
+<script>
+    function updateImage() {
+        var priority = document.getElementById("prioritySelect").value;
+        // Assumes you have images named VERY_HIGH.png, etc. in static/images/
+        document.getElementById("priorityImage").src = '/images/' + priority + '.png';
+    }
+    // Initialize on load
+    window.onload = updateImage;
+</script>
+
+</body>
+</html>
