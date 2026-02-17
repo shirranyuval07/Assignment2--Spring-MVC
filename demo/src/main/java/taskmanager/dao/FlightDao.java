@@ -19,7 +19,6 @@ public class FlightDao {
         }
     }
 
-    @SuppressWarnings("unchecked")
     public List<Flight> loadAll() {
         File file = new File(FILE_NAME);
         if (!file.exists()) {

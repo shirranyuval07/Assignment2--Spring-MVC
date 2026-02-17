@@ -32,7 +32,7 @@ public class FlightFormController {
 
         model.addAttribute("flight", flight);
         model.addAttribute("mode", mode);
-        return "flight-form"; // תצטרך לשנות את שם הקובץ task-form ל flight-form
+        return "flight-form";
     }
 
     @PostMapping("/save")

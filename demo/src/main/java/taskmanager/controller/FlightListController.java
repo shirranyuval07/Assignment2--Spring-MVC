@@ -15,31 +15,38 @@ import taskmanager.service.FlightService;
 public class FlightListController {
 
     @Autowired
-    private FlightService flightService;
+    private FlightService flightService; // The injected instance
 
     @GetMapping
     public String showMainPage(Model model, HttpSession session) {
+        // Simple login check
         if (session.getAttribute("username") == null) {
             return "redirect:/login";
         }
 
-        // שינוי שם המשתנה ל-flights כדי לשקף את התוכן
         model.addAttribute("flights", flightService.getAllFlightsSorted());
         return "main-page";
     }
 
+    // Handles the toolbar buttons (Add, Edit, Delete, Passengers)
     @PostMapping("/action")
     public String handleToolbarAction(@RequestParam String action,
-                                      @RequestParam(required = false) Long selectedFlightId, // שינוי ל-Long
+                                      @RequestParam(required = false) Long selectedFlightId,
                                       Model model) {
 
-        if ("Add".equals(action)) return "redirect:/flight/form?mode=add";
+        // 1. Handle "Add" first (It does NOT require a selected ID)
+        if ("Add".equals(action)) {
+            return "redirect:/flight/form?mode=add";
+        }
 
+        // 2. Safety Check: For everything else, the user MUST pick a flight
         if (selectedFlightId == null) {
             model.addAttribute("errorMessage", "You must select a flight to perform this action.");
+            // Ideally, you should reload the main page with an error, but "error" view works too
             return "error";
         }
 
+        // 3. Handle actions
         switch (action) {
             case "Show":
                 return "redirect:/flight/form?mode=show&id=" + selectedFlightId;
@@ -48,8 +55,13 @@ public class FlightListController {
                 return "redirect:/flight/form?mode=edit&id=" + selectedFlightId;
 
             case "Delete":
+                // FIX: calls the instance method (lowercase 'f')
                 flightService.delete(selectedFlightId);
                 return "redirect:/";
+
+            case "Passengers":
+                // New logic: Redirects to the Passenger list
+                return "redirect:/passengers?flightId=" + selectedFlightId;
 
             default:
                 return "redirect:/";
